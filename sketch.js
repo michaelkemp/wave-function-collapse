@@ -25,6 +25,16 @@ function setup() {
   }
   createCanvas(WIDE, WIDE);
   background(240);
+
+  // SEED CHIPS
+  for(let i=0; i<10; ++i) {
+    tmp = Math.floor(Math.random() * DIM * DIM);
+    reductions[tmp] = 100;
+    tiles[tmp].available = [...[0]];
+    tiles[tmp].collapse();
+    propagate(tmp);
+    PIECES[tiles[tmp].tile].display( tiles[tmp].x, tiles[tmp].y, tiles[tmp].wide );
+  }
 }
 
 
