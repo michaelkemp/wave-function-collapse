@@ -6,7 +6,7 @@ function preload() {
 }
 
 const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
-const DIM = 50;
+const DIM = 40;
 const TILE = 7;
 const WIDE = DIM * TILE;
 const PCOUNT = 36;
@@ -19,39 +19,28 @@ function setup() {
   for(let i=0; i<PIECES.length; ++i) {
     ALL[i] = i;
   }
-  loadTiles();
   for (let i = 0; i < DIM * DIM; ++i) {
     reductions[i] = PCOUNT;
   }
+  loadTiles();
   createCanvas(WIDE, WIDE);
-  background(240);
-
-  // SEED CHIPS
-  for(let i=0; i<10; ++i) {
-    tmp = Math.floor(Math.random() * DIM * DIM);
-    reductions[tmp] = 100;
-    tiles[tmp].available = [...[0]];
-    tiles[tmp].collapse();
-    propagate(tmp);
-    PIECES[tiles[tmp].tile].display( tiles[tmp].x, tiles[tmp].y, tiles[tmp].wide );
-  }
 }
 
 
 function draw() {
+  background(240);
   let min = Math.min(...reductions);
   if (min == 100) {
     noLoop();
-    return;
   } else {
     let tmp = indexOfAll(reductions, min);
     coll = tmp[Math.floor(Math.random() * tmp.length)];
+    tiles[coll].collapse();
   }
-  tiles[coll].collapse();
-  reductions[coll] = 100;
-  propagate(coll);
-
-  PIECES[tiles[coll].tile].display( tiles[coll].x, tiles[coll].y, tiles[coll].wide );
+  for(t of tiles) {
+    if (t.collapsed) PIECES[t.tile].display( t.x, t.y, t.wide );
+  }
+  
 }
 
 function urdl(i) {
@@ -83,11 +72,28 @@ function reduce(i) {
 
 function propagate(i) {
   const [up, rt, dn, lt] = urdl(i);
-  let test = tiles[i].tile;
+  //let test = tiles[i].tile;
   if ((up >= 0) && (!tiles[up].collapsed)) reduce(up);
   if ((rt >= 0) && (!tiles[rt].collapsed)) reduce(rt);
   if ((dn >= 0) && (!tiles[dn].collapsed)) reduce(dn);
   if ((lt >= 0) && (!tiles[lt].collapsed)) reduce(lt);
+}
+
+function undo(i) {
+  tiles[i].available = [...ALL];
+  tiles[i].collapsed = false;
+  tiles[i].tile = -1;
+  reductions[i] = PCOUNT;
+}
+
+function backtrack(i) {
+  const [up, rt, dn, lt] = urdl(i);
+  if (up > 0 && tiles[up].collapsed) undo(up);
+  if (rt > 0 && tiles[rt].collapsed) undo(rt);
+  if (dn > 0 && tiles[dn].collapsed) undo(dn);
+  if (lt > 0 && tiles[lt].collapsed) undo(lt);
+  undo(i);
+  reduce(i);
 }
 
 class Tile {
@@ -105,13 +111,13 @@ class Tile {
       this.tile = this.available[
         Math.floor(Math.random() * this.available.length)
       ];
+      this.available = [...[this.tile]];
+      this.collapsed = true;
+      reductions[this.index] = 100;
+      propagate(this.index);
     } else {
-      // KLUDGE
-      console.log("K:", this.index);
-      this.tile = 1;
+      backtrack(this.index)
     }
-    this.available = [...[this.tile]];
-    this.collapsed = true;
   }
 }
 
