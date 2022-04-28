@@ -6,7 +6,7 @@ function preload() {
 }
 
 const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
-const DIM = 40;
+const DIM = 75;
 const TILE = 7;
 const WIDE = DIM * TILE;
 const PCOUNT = 36;
@@ -16,6 +16,12 @@ let reductions = [];
 
 function setup() {
   loadPieces();
+  // Fix elements not picked up by Edge Mapping
+  // Remove edges that should NOT happen (tiles that shouldn't join by color)
+  PIECES[22].l = [0]; PIECES[23].u = [0]; PIECES[28].r = [0]; PIECES[29].d = [0]; 
+  PIECES[24].u = [22]; PIECES[24].l = [23]; PIECES[25].u = [28]; PIECES[25].r = [23]; 
+  PIECES[26].d = [28]; PIECES[26].r = [29]; PIECES[27].d = [22]; PIECES[27].l = [29]; 
+  
   for(let i=0; i<PIECES.length; ++i) {
     ALL[i] = i;
   }
