@@ -2,12 +2,12 @@
 let srcImage;
 
 function preload() {
-  srcImage = loadImage('circuit2.png');
+  srcImage = loadImage('pieces.png');
 }
 
 const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
-const DIM = 75;
-const TILE = 7;
+const DIM = 60;
+const TILE = 15;
 const WIDE = DIM * TILE;
 const PCOUNT = 36;
 let ALL = [];
@@ -16,11 +16,16 @@ let reductions = [];
 
 function setup() {
   loadPieces();
-  // Fix elements not picked up by Edge Mapping
+  // for(let i=0; i<PIECES.length; ++i) {
+  //   console.log("Piece: ", i, PIECES[i].u, PIECES[i].r, PIECES[i].d, PIECES[i].l);
+  // }
   // Remove edges that should NOT happen (tiles that shouldn't join by color)
-  PIECES[22].l = [0]; PIECES[23].u = [0]; PIECES[28].r = [0]; PIECES[29].d = [0]; 
-  PIECES[24].u = [22]; PIECES[24].l = [23]; PIECES[25].u = [28]; PIECES[25].r = [23]; 
-  PIECES[26].d = [28]; PIECES[26].r = [29]; PIECES[27].d = [22]; PIECES[27].l = [29]; 
+  PIECES[0].u = [5]; PIECES[0].r = [4]; 
+  PIECES[3].u = [7]; PIECES[3].l = [4];
+  PIECES[1].d = [5]; PIECES[1].r = [6]; 
+  PIECES[2].d = [7]; PIECES[2].l = [6];
+  PIECES[4].u = [8]; PIECES[5].r = [8]; PIECES[6].d = [8]; PIECES[7].l = [8];
+   
   
   for(let i=0; i<PIECES.length; ++i) {
     ALL[i] = i;

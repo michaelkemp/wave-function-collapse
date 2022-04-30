@@ -1,5 +1,6 @@
-const sDim = 6;
-const pSize = 56;
+const xDim = 10;
+const yDim = 4;
+const pSize = 15;
 let PIECES = [];
 let EDGES = []; 
 
@@ -22,11 +23,11 @@ class Piece {
 }
 
 function loadPieces() {
-    for(let y=0; y<sDim; ++y) {
-        for(let x=0; x<sDim; ++x) {
+    for(let y=0; y<yDim; ++y) {
+        for(let x=0; x<xDim; ++x) {
             img = createImage(pSize, pSize);
             img.copy(srcImage, x * pSize, y * pSize, pSize, pSize, 0, 0, pSize, pSize);
-            let i = (y * sDim) + x;
+            let i = (y * xDim) + x;
             let [uE, rE, dE, lE] = edges(img);
             PIECES[i] = new Piece(img, i, uE, rE, dE, lE);
         }
